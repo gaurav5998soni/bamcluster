@@ -6,13 +6,20 @@
  <section class="section-features js--section-features" id="features">
      <div class="row">
          {% for article in articles %}
-         <div class="article-box">
+         <div class="article{{ article.id }} article-box">
             <a href="{% url 'article' article.id %}">
 
-                <h2>{{article.a_title}}</h2>
-                <p class="long-copy">{{article.a_description}}</p>
+                <h2>{{article.title}}</h2>
+                <p class="long-copy">{{article.description}}</p>
                 <br>
-                <p class="date_para">Posted on: {{article.a_date|date}}</p>
+                <p class="date_para">Posted on: {{article.created|date}}</p>
+                <a href="{% url 'article' article.id %}">More Details</a><br>
+                  {% if request.user.is_authenticated %}
+                  <a  href="" class="delete_article" data="{{article.id}}">
+                  
+                 <h6 class=""  ><i class="fa fa-trash fa-lg  " aria-hidden="true" class="" style="margin-left: 10px;"></i></h6>
+                </a>
+                {% endif %}
                 <hr>
             </a>
          </div>

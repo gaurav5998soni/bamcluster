@@ -3,52 +3,60 @@
 
 {% block body_block %}
 <div class="nav-bg">{% include 'cluster/header2.html' %}</div>
- <section class="section-cities" id="cities">
-            <div class="row">
-                <h2>Our creative products</h2>
-            </div>
+<section class="section-cities" id="cities">
+      <div class="row">
+          <h2>Our creative products</h2>
+      </div>
 
-            <div class="row">
-                {% for product in products %}
-                <div>
-                <div class="col span-1-of-3">
-                    <img src="{{ product.p_product_img.url }}" alt="{{product.p_title}}" height="200" width="200">
-                    <div  class="product_title_index">
-                        <h3>{{product.p_title}}</h3>
-                    </div>
-                    <div class="city-feature">
-                        <a href="{% url 'product' product.id %}">More Details</a>
-                    </div>
-                </div>
-                </div>
-                {% endfor %}
-            </div>
-            
-        </section>
+      <div class="row">
+          {% for product in products %}
+         
+          <div class="product{{product.id}} col span-1-of-3">
+              <img src="{{ product.image.url }}" alt="{{product.title}}" height="200" width="200">
+              <div  class="product_title_index">
+                  <h3>{{product.title}}</h3>
+              </div>
+              <div class="city-feature">
+                  <a href="{% url 'product' product.id %}">More Details</a><br>
+                  {% if request.user.is_authenticated %}
+                  <a  href="" class="delete_product" data="{{product.id}}">
+                  
+          <h6 class=""  ><i class="fa fa-trash fa-lg  " aria-hidden="true" class="" style="margin-left: 10px;"></i></h6>
+      </a>
+      {% endif %}
+              </div>
+
+          </div>
+          
+          {% endfor %}
+      </div>
+      
+  </section>
 
 <div class="row">
-    <div class="paginator">
-        {% if is_paginated %}
-	        {% if page_obj.has_previous %}
-		        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-	        {% endif %}
+<div class="paginator">
+  {% if is_paginated %}
+      {% if page_obj.has_previous %}
+          <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+          <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
 
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-            <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-            {% endif %}
-        {% endfor %}
+  {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+      <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+      {% endif %}
+  {% endfor %}
 
-	        {% if page_obj.has_next %}
-		        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-		        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-	        {% endif %}
+      {% if page_obj.has_next %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
 
-        {% endif %}
-    </div>
+  {% endif %}
+</div>
 </div>
 }
+
 {% endblock %}

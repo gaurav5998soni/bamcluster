@@ -13,6 +13,8 @@
         <link rel="stylesheet" type="text/css" href="{% static 'cluster/resources/css/style.css'%}">
         <link rel="stylesheet" type="text/css" href="{% static 'cluster/resources/css/queries.css'%}">
         <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,300italic' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <title>BambooCraftCluster</title>
 
         <!--<link rel="apple-touch-icon" sizes="57x57" href="/resources/favicons/apple-touch-icon-57x57.png">-->
@@ -47,7 +49,7 @@
             <div class="row">
                 <div class="col span-1-of-2">
                     <ul class="footer-nav">
-                        <li><a href="{% url 'home'%}">Home</a></li>
+                        <li><a href="{% url 'home' %}">Home</a></li>
                         <li><a href="{% url 'products' %}">Products</a></li>
                         <li><a href="{% url 'articles' %}">Articles</a></li>
                         <li><a href="{% url 'support_us' %}">Support us</a></li>
@@ -87,8 +89,70 @@
       ga('create', 'UA-61026110-2', 'auto');
       ga('send', 'pageview');
 
-    </script>
 
+    </script>
+    <script>
+        $(document).ready(function() {
+        
+});
+    </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('.delete_article').click(function(event) {
+  event.preventDefault();
+  var article_id = $(this).attr('data');
+  console.log(article_id);
+  
+  if (confirm('Do you want to delete this post ?')) {
+
+      $.ajax({
+          type: 'GET',
+          url: '{% url "delete_article" %}',
+          data: {
+              'article_id': article_id,
+              
+          },
+
+          success: function(data) {
+              
+              $('.article' + article_id).remove();
+
+          }
+      });
+  }
+});  
+$('.delete_product').click(function(event) {
+  event.preventDefault();
+  var product_id = $(this).attr('data');
+  console.log(product_id);
+  
+  if (confirm('Do you want to delete this post ?')) {
+
+      $.ajax({
+          type: 'GET',
+          url: '{% url "delete_product" %}',
+          data: {
+              'product_id': product_id,
+              
+          },
+
+          success: function(data) {
+              
+              $('.product' + product_id).remove();
+
+          }
+      });
+  }
+});   
+  
+});
+
+
+  
+
+</script>
     </body>
 
 </html>

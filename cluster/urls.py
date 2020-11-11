@@ -13,7 +13,7 @@ urlpatterns = [
     path('products/<int:pk>/update/', views.ProductUpdateView.as_view(
         template_name="cluster/admin/product_form.html"),
          name="update_product"),
-    path('products/<int:pk>/delete/', views.ProductDeleteView.as_view(), name="delete_product"),
+    #path('products/<int:pk>/delete/', views.ProductDeleteView.as_view(), name="delete_product"),
     path('articles/', views.article.as_view(), name="articles"),
     path('articles/<int:pk>/', views.article_detail, name="article"),
     path('articles/<int:pk>/update/', views.ArticleUpdateView.as_view(
@@ -28,13 +28,13 @@ urlpatterns = [
     path('our-team/<int:pk>/update/', views.OurTeamUpdateView.as_view(
         template_name="cluster/admin/our_team_form.html"),
          name="update_our_team"),
-    path('our-team/our-team-search/<str:search>/', views.SearchListView.as_view(
-        template_name="cluster/admin/our_team_search.html"),
-         name="search_our_team"),
     path('our-team/<int:pk>/delete/', views.OurTeamDeleteView.as_view(
         template_name="cluster/admin/our_team_confirm_delete.html"),
          name="delete_our_team"),
     path('support-us/', views.support_us, name="support_us"),
     path('login/',views.login_view, name="login"),
-    path('logout/',auth_views.LogoutView.as_view(template_name='cluster/logout.html'), name="logout")
+    path('logout/', views.logout_view, name="logout"),
+    path('delete_product/', views.delete_product, name='delete_product'),    
+    path('delete_article/', views.delete_article, name='delete_article'),    
+
 ]

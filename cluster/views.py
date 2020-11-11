@@ -2,15 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Article, ContactUs, OurTeam
 from .forms import ArticleForm, ProductForm, ContactUsForm, OurTeamForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
+from django.http import JsonResponse
+
 # Create your views here.
 
 def home(request):
 	mydict = {
-		"Articles": Article.objects.all().order_by('-a_date')[:3],
+		"Articles": Article.objects.all().order_by('-created')[:3],
 		"Products": Product.objects.all()[:4]
 	}
 	return render(request, 'cluster/index.html',mydict)
@@ -31,7 +34,7 @@ def product_detail(request, pk):
 
 class ProductUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Product
-	fields = ['p_title','p_description', 'p_product_img']
+	fields = ['product_title','product_description', 'product_img']
 	#
 	# def form_valid(self, form):
 	# 	form.instance.author = self.request.user
@@ -45,23 +48,38 @@ class ProductUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 		return False
 
 
+def delete_product(request):
+	product_id = request.GET.get('product_id')
+	product = get_object_or_404(Product, id=product_id)
+	
+	product.delete()
+	return JsonResponse('deleted', safe=False)
 
-class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-	model = Product
-	success_url = '/'
 
-	def test_func(self):
-		post = self.get_object()
-		if self.request.user.is_authenticated:
-			return True
-		return False
+def delete_article(request):
+	article_id = request.GET.get('article_id')
+	article = get_object_or_404(Article, id=article_id)
+	
+	article.delete()
+	return JsonResponse('deleted', safe=False)
+
+
+# class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+# 	model = Product
+# 	success_url = '/'
+
+# 	def test_func(self):
+# 		post = self.get_object()
+# 		if self.request.user.is_authenticated:
+# 			return True
+# 		return False
 
 
 class article(ListView):
 	template_name = 'cluster/articles.html'
 	model = Article
 	context_object_name = 'articles'
-	ordering = ['-a_date']
+	ordering = ['-created']
 	paginate_by = 5
 
 
@@ -73,7 +91,7 @@ def article_detail(request, pk):
 
 class ArticleUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Article
-	fields = ['a_title','a_description']
+	fields = ['title','description']
 
 	def test_func(self):
 		post = self.get_object()
@@ -117,38 +135,45 @@ def login_view(request):
 
 
 def updates(request):
-	a_form = ArticleForm()
-	p_form = ProductForm()
+	
+	article_form = ArticleForm()
+	product_form = ProductForm()
 	if request.method == "POST":
-		a_form = ArticleForm(request.POST)
-		p_form = ProductForm(request.POST, request.FILES)
-		if a_form.is_valid():
-			title = a_form.cleaned_data.get('a_title')
+		
+		article_form = ArticleForm(request.POST)
+		product_form = ProductForm(request.POST, request.FILES)
+		if article_form.is_valid():
+			title = article_form.cleaned_data.get('a_title')
 			messages.success(request, 'Article {title} is created successfully!')
-			a_form.save()
-			return redirect('updates')
-		elif p_form.is_valid():
-			p_form.save()
-			title = a_form.cleaned_data.get('p_title')
+			article_form.save()
+			
+		if product_form.is_valid():
+
+			product_form.save()
+			print('hello')
+			title = article_form.cleaned_data.get('title')
 			messages.success(request, 'Article {title} is created successfully!')
-			return redirect('updates')
+			
 		else:
 			messages.error(request, 'Username/Password is not valid!')
 
+
 	return render(request, 'cluster/admin/updates.html')
+
 
 def add_member(request):
 	if request.method == "POST":
 		form = OurTeamForm(request.POST, request.FILES)
 		if form.is_valid():
 			name = form.cleaned_data.get('name')
-			messages.success(request, f'Hey {name}, is created successfully!')
+			messages.success(request, 'Hey {name}, is created successfully!')
 			form.save()
 			return redirect('our_team')
 		else:
 			messages.error(request, 'Fill all fields accurately!')
 
 	return render(request, 'cluster/admin/add_member.html')
+
 
 def our_team(request):
 	form = OurTeamForm()
@@ -161,11 +186,18 @@ def our_team(request):
 		users = paginator(1)
 	except EmptyPage:
 		users = paginator.page(paginator.num_pages)
+	
+	query = request.GET.get('search')
+	
+	if query:
+		members = OurTeam.objects.filter(Q(name__icontains=query)|
+			Q(designation__icontains=query))
+		
 	context = {
-		'members': members,
-		'page_obj': users,
+		#'members': members,
+		'page_obj': members,
 	}
-
+	
 	return render(request, 'cluster/admin/our_team.html', context)
 
 
@@ -180,6 +212,7 @@ class OurTeamUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 			return True
 		return False
 
+
 class OurTeamDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 	model = OurTeam
 	success_url = '/'
@@ -191,32 +224,6 @@ class OurTeamDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 		return False
 
 
-
-def searchMatch(query, member):
-     # return true only if query match
-     if query in member.name.lower() or query in member.designation.lower():
-          return True
-     else:
-          return False
-
-class SearchListView(ListView):
-	model = OurTeam
-	template_name = 'cluster/admin/search_our_team.html'
-	paginate_by = 10
-
-	def get(self, request):
-		search = request.GET.get('search')
-		print("search", search)
-		members = OurTeam.objects.all()
-		n_members = []
-		for member in members:
-			if searchMatch(search, member):
-				n_members.append(member)
-		print(n_members)
-		return n_members
-
-
-
 def contact_us(request):
 	form = ContactUsForm()
 	if request.method == "POST":
@@ -224,12 +231,13 @@ def contact_us(request):
 		print(request.POST)
 		if form.is_valid():
 			name = form.cleaned_data.get('name')
-			messages.success(request, f'{name}, is created!')
+			messages.success(request, '{name}, is created!')
 			form.save()
 			return redirect('home')
 		else:
 			messages.error(request, 'Fill all fields accurately!')
 	return render(request, 'cluster/contact_us.html', )
+
 
 def contact_us_responses(request):
 	responses = ContactUs.objects.all()
@@ -238,3 +246,8 @@ def contact_us_responses(request):
 
 def support_us(request):
 	return render(request, 'cluster/help_us.html')
+
+
+def logout_view(request):
+	logout(request)
+	return redirect('/cluster/')

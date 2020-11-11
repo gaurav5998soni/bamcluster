@@ -8,11 +8,11 @@
         <img src="{% static 'cluster/resources/img/logo.png' %}" alt="Bamboo Craft Cluster logo" class="logo-black">
         <ul class="main-nav js--main-nav">
             <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="#cities">Products</a></li>
-            <li><a href="#articles">Articles</a></li>
-            <li><a href="#plans">About us</a></li>
+            <li><a href="{% url 'products' %}">Products</a></li>
+            <li><a href="{% url 'articles' %}">Articles</a></li>
+            <li><a href="">About us</a></li>
             <li><a href="{% url 'contact_us' %}">Contact us</a></li>
-            {%if user.is_authenticated%}
+            {% if user.is_authenticated %}
             <li><a href="{% url 'updates' %}">Update</a></li>
             <li><a href="{% url 'add_member' %}">Add Member</a></li>
             <li><a href="{%url 'logout'%}">Logout</a></li>

@@ -6,7 +6,7 @@
  <section class="section-form">
 
             <div class="row">
-                <h2>Product Updates</h2>
+                <h2>Add Product</h2>
             </div>
      <div class="row js--wp-3">
                 <div class="col span-1-of-1 ">
@@ -18,14 +18,14 @@
                 </div>
             </div>
             <div class="row">
-                <form method="POST" enctype="multipart/form-data" class="contact-form">
+                <form method="POST" enctype="multipart/form-data" class="contact-form" action="{% url 'updates' %}">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col span-1-of-3">
                             <label for="p_title">Title</label>
                         </div>
                         <div class="col span-2-of-3">
-                            <input type="text" name="p_title" id="p_title" value="{{object.p_title}}" required>
+                            <input type="text" name="title" id="p_title" value="{{object.title}}" required>
                         </div>
                     </div>
                     <div class="row">
@@ -33,7 +33,7 @@
                             <label for="p_description">Description</label>
                         </div>
                         <div class="col span-2-of-3">
-                            <input type="text" name="p_description" id="p_description" value="{{object.p_description}}" required>
+                            <input type="text" name="description" id="p_description" value="{{object.description}}" required>
                         </div>
                     </div>
 
@@ -42,7 +42,7 @@
                             <label for="p_product_img">Image</label>
                         </div>
                         <div class="col span-2-of-3">
-                            <input type="file" name="p_product_img" id="p_product_img" value="{{object.p_product_img}}">
+                            <input type="file" name="image" id="p_product_img" value="{{object.image}}">
                         </div>
                     </div>
 

@@ -9,8 +9,8 @@
         <ul class="main-nav js--main-nav">
             <!--<li><a href="#features">Cluster</a></li>-->
             <!--<li><a href="#works">Our aim</a></li>-->
-            <li><a href="#cities">Products</a></li>
-            <li><a href="#articles">Articles</a></li>
+            <li><a href="{% url 'products' %}">Products</a></li>
+            <li><a href="{% url 'articles' %}">Articles</a></li>
             <li><a href="#plans">About us</a></li>
             <li><a href="{% url 'contact_us' %}">Contact us</a></li>
             {% if user.is_authenticated %}
